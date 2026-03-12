@@ -5,20 +5,20 @@
   --font-playfair: var(--font-playfair);
 
   /* Colors */
-  --color-base: #0f0f17;
-  --color-surface: #13131f;
-  --color-card: #1e1e2e;
-  --color-border: #313244;
-  --color-subtle: #585b70;
-  --color-muted: #45475a;
-  --color-text: #cdd6f4;
-  --color-subtext: #a6adc8;
-  --color-purple: #cba6f7;
-  --color-rose: #f38ba8;
-  --color-teal: #94e2d5;
-  --color-amber: #fab387;
-  --color-sky: #89b4fa;
-  --color-green: #a6e3a1;
+  --color-base: rgb(15 15 23);
+  --color-surface: rgb(19 19 31);
+  --color-card: rgb(30 30 46);
+  --color-border: rgb(49 50 68);
+  --color-subtle: rgb(88 91 112);
+  --color-muted: rgb(69 71 90);
+  --color-text: rgb(205 214 244);
+  --color-subtext: rgb(166 173 200);
+  --color-purple: rgb(203 166 247);
+  --color-rose: rgb(243 139 168);
+  --color-teal: rgb(148 226 213);
+  --color-amber: rgb(250 179 135);
+  --color-sky: rgb(137 180 250);
+  --color-green: rgb(166 227 161);
 }
 
 ::-webkit-scrollbar {
@@ -31,6 +31,6 @@
 }
 
 body {
-  background: #0f0f17;
-  color: #cdd6f4;
+  background: rgb(15 15 23);
+  color: rgb(205 214 244);
 }
