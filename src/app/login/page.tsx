@@ -1,4 +1,24 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 export default function LoginPage() {
+  const router = useRouter();
+  const [loginFormState, setLoginFormState] = useState({
+    email: "",
+    password: "",
+    showPassword: false,
+    error: "",
+    loading: false,
+  });
+
+  const handleSingInButtonClick = () => {
+    console.log(loginFormState);
+    router.push("/");
+  };
+
   return (
     <div className="min-h-screen bg-base flex items-center justify-center px-4 relative overflow-hidden">
       <div className="w-full max-w-md relative z-10">
@@ -22,6 +42,13 @@ export default function LoginPage() {
               <input
                 type="email"
                 placeholder="you@example.com"
+                value={loginFormState.email}
+                onChange={(e) => {
+                  setLoginFormState({
+                    ...loginFormState,
+                    email: e.target.value,
+                  });
+                }}
                 className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none`}
               />
             </div>
@@ -34,18 +61,48 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   placeholder="••••••••"
+                  type={loginFormState.showPassword ? "text" : "password"}
+                  value={loginFormState.password}
+                  onChange={(e) => {
+                    setLoginFormState({
+                      ...loginFormState,
+                      password: e.target.value,
+                    });
+                  }}
                   className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none pr-11`}
                 />
-                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext transition-colors"></button>
+                <button
+                  onClick={() =>
+                    setLoginFormState({
+                      ...loginFormState,
+                      showPassword: !loginFormState.showPassword,
+                    })
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext transition-colors"
+                >
+                  {loginFormState.showPassword ? "Hide" : "Show"}
+                </button>
               </div>
             </div>
 
             {/* Submit */}
-            <button className="w-full bg-purple text-card font-semibold py-3 rounded-xl hover:bg-purple/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple/20 mt-1">
+            <button
+              onClick={handleSingInButtonClick}
+              className="w-full bg-purple text-card font-semibold py-3 rounded-xl hover:bg-purple/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple/20 mt-1"
+            >
               Sign in
             </button>
           </div>
         </div>
+        <p className="text-center text-sm text-subtle mt-5">
+          Don't have an account?{" "}
+          <Link
+            href="/signup"
+            className="text-purple font-semibold hover:underline"
+          >
+            Sign up free
+          </Link>
+        </p>
       </div>
     </div>
   );
