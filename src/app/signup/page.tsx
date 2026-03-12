@@ -113,7 +113,9 @@ export default function SignUpPage() {
               <div className="relative">
                 <input
                   placeholder="••••••••"
-                  type={signUpFormState.showConfirmPassword ? "text" : "password"}
+                  type={
+                    signUpFormState.showConfirmPassword ? "text" : "password"
+                  }
                   value={signUpFormState.confirmPassword}
                   onChange={(e) => {
                     setSignUpFormState({
@@ -147,6 +149,15 @@ export default function SignUpPage() {
             </button>
           </div>
         </div>
+        <p className="text-center text-sm text-subtle mt-5">
+         Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-purple font-semibold hover:underline"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );
