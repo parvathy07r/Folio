@@ -16,7 +16,7 @@ export default function LoginPage() {
 
   const handleSingInButtonClick = () => {
     console.log(loginFormState);
-    router.push("/");
+    router.push("/dashboard");
   };
 
   return (
