@@ -20,3 +20,22 @@ export function timeAgo(date: Date): string {
   }
   return `${Math.floor(diff / 86400)}d ago`;
 }
+
+export function getDate() {
+  return new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+export function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    return "Good Morning";
+  } else if (hour < 18) {
+    return "Good Afternoon";
+  } else {
+    return "Good Evening";
+  }
+}
