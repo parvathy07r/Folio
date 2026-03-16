@@ -3,9 +3,14 @@ import { getAvatar } from "@/utils";
 import Link from "next/link";
 
 const NAV_ITEMS = [
-  { id: "Home", icon: "⌂", label: "Home" },
-  { id: "Notes", icon: "◈", label: "Notes" },
-  { id: "AI Assistant", icon: "◎", label: "AI Assistant" },
+  { id: "Home", icon: "⌂", label: "Home", href: "/dashboard" },
+  { id: "Notes", icon: "◈", label: "Notes", href: "/dashboard/notes" },
+  {
+    id: "AI Assistant",
+    icon: "◎",
+    label: "AI Assistant",
+    href: "/dashboard/chat",
+  },
 ];
 const TAGS = [
   { label: "work", color: "#89b4fa" },
@@ -40,7 +45,7 @@ export default function Sidebar() {
           return (
             <Link
               key={item.id}
-              href="#"
+              href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-card hover:text-text transition-all`}
             >
               <span>{item.icon}</span>
