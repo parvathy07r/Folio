@@ -64,3 +64,12 @@ export const MOCK_NOTES: Note[] = [
     userId: 1,
   },
 ];
+
+export const AI_RESPONSES = [
+  "That's a great thought! Start by identifying the core problem, then work outward to solutions.",
+  "I can help you outline this. What's your main goal with this idea?",
+  "Consider breaking this into smaller steps for clarity. Big ideas become manageable when chunked down.",
+  "Interesting perspective! Have you thought about approaching it from the opposite angle?",
+  "I'd suggest starting with the core idea and building out from there.",
+  "Great question. Most complex problems have simple underlying patterns worth finding first.",
+];
