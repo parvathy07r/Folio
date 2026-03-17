@@ -5,6 +5,8 @@ import { useState } from "react";
 import NoteCard from "@/components/noteCard";
 import { MOCK_NOTES } from "@/data/constants";
 import Searchbar from "@/components/Searchbar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
@@ -26,7 +28,13 @@ export default function HomePage() {
           {getGreeting()}, Alex ✦
         </h1>
         <p className="text-subtle text-base mt-2">
-          {MOCK_NOTES.length} notes in your workspace
+          <Badge
+            variant="secondary"
+            className="text-subtle bg-card border-none rounded-lg px-2 py-0.5 text-xs"
+          >
+            {MOCK_NOTES.length} notes
+          </Badge>{" "}
+          in your workspace
         </p>
       </div>
 
@@ -46,6 +54,8 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      <Separator className="mb-10" />
 
       {/* recent */}
       <div>

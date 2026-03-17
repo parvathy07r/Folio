@@ -2,6 +2,11 @@
 
 import { AI_RESPONSES } from "@/data/constants";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Save, Send, ArrowDown } from "lucide-react";
 
 type ChatMessage = {
   role: "user" | "ai";
@@ -46,7 +51,7 @@ export default function ChatPage() {
   return (
     <div className="h-screen flex flex-col overflow-hidden">
       {/* header */}
-      <div className="flex items-center justify-between px-10 py-6 border-b border-border flex-shrink-0">
+      <div className="flex items-center justify-between px-10 py-6 flex-shrink-0">
         <div>
           <h2 className="font-playfair text-2xl font-bold text-text">
             AI Assistant
@@ -56,10 +61,13 @@ export default function ChatPage() {
             note.
           </p>
         </div>
-        <button className="bg-purple text-card font-semibold px-4 py-2.5 rounded-xl text-sm hover:bg-purple/90 transition-all shadow-lg shadow-purple/20 flex-shrink-0">
-          📝 Save as Note
-        </button>
+        <Button className="bg-purple text-card font-semibold px-4 py-2.5 h-auto rounded-xl text-sm hover:bg-purple/90 shadow-lg shadow-purple/20 flex-shrink-0">
+          <Save className="size-4" />
+          Save as Note
+        </Button>
       </div>
+
+      <Separator />
 
       {/* messages */}
 
@@ -75,9 +83,11 @@ export default function ChatPage() {
           >
             {/* AI avatar */}
             {msg.role === "ai" && (
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple to-sky flex items-center justify-center text-xs text-card font-bold mr-3 mt-1 flex-shrink-0">
-                ✦
-              </div>
+              <Avatar className="size-7 rounded-lg mr-3 mt-1 flex-shrink-0">
+                <AvatarFallback className="rounded-lg bg-gradient-to-br from-purple to-sky text-xs text-card font-bold">
+                  ✦
+                </AvatarFallback>
+              </Avatar>
             )}
             {/* Bubble */}
             <div
@@ -96,31 +106,36 @@ export default function ChatPage() {
 
       {/* scroll to bottom button */}
       {showScrollButton && (
-        <button
+        <Button
+          variant="outline"
+          size="icon"
           onClick={scrollToBottom}
-          className="absolute bottom-24 right-12 w-10 h-10 bg-card border border-border rounded-full flex items-center justify-center text-subtext hover:text-purple hover:border-purple transition-all shadow-lg z-10"
+          className="absolute bottom-24 right-12 size-10 rounded-full bg-card border-border text-subtext hover:text-purple hover:border-purple shadow-lg z-10"
         >
-          ↓
-        </button>
+          <ArrowDown className="size-4" />
+        </Button>
       )}
 
+      <Separator />
+
       {/* input */}
-      <div className="px-10 py-5 border-t border-border flex-shrink-0">
+      <div className="px-10 py-5 flex-shrink-0">
         <div className="flex gap-3 items-end">
-          <input
+          <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="Ask anything... (Enter to send)"
-            className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-text text-sm placeholder:text-muted focus:outline-none focus:border-purple transition-colors"
+            className="flex-1 bg-card border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30"
           />
-          <button
+          <Button
             onClick={handleSend}
             disabled={!input.trim()}
-            className="bg-purple text-card cursor-pointer font-semibold px-5 py-3 rounded-xl text-sm hover:bg-purple/90 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-purple/20 flex-shrink-0"
+            className="bg-purple text-card cursor-pointer font-semibold px-5 py-3 h-auto rounded-xl text-sm hover:bg-purple/90 disabled:opacity-40 shadow-lg shadow-purple/20 flex-shrink-0"
           >
+            <Send className="size-4" />
             Send
-          </button>
+          </Button>
         </div>
       </div>
     </div>

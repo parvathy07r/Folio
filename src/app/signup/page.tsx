@@ -3,6 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -26,21 +36,21 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-base flex items-center justify-center px-4 relative overflow-hidden">
       <div className="w-full max-w-md relative z-10">
         {/* Card */}
-        <div className="bg-surface/80 border border-border rounded-2xl p-9 backdrop-blur-md shadow-2xl">
+        <Card className="bg-surface/80 border-border rounded-2xl p-9 backdrop-blur-md shadow-2xl ring-0">
           {/* heading */}
-          <div className="mb-7">
-            <p className="text-subtle text-sm">
+          <CardHeader className="p-0 mb-7">
+            <CardDescription className="text-subtle text-sm">
               Sign up to your Folio workspace
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
 
-          <div className="flex flex-col gap-4">
+          <CardContent className="p-0 flex flex-col gap-4">
             {/* name */}
             <div>
-              <label className="text-xs font-semibold text-subtext tracking-wider block mb-2">
+              <Label className="text-xs font-semibold text-subtext tracking-wider mb-2">
                 NAME
-              </label>
-              <input
+              </Label>
+              <Input
                 type="text"
                 placeholder="John Doe"
                 value={signUpFormState.name}
@@ -50,15 +60,15 @@ export default function SignUpPage() {
                     name: e.target.value,
                   });
                 }}
-                className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none`}
+                className="w-full bg-surface/60 border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30"
               />
             </div>
             {/* Email */}
             <div>
-              <label className="text-xs font-semibold text-subtext tracking-wider block mb-2">
+              <Label className="text-xs font-semibold text-subtext tracking-wider mb-2">
                 EMAIL
-              </label>
-              <input
+              </Label>
+              <Input
                 type="email"
                 placeholder="you@example.com"
                 value={signUpFormState.email}
@@ -68,17 +78,17 @@ export default function SignUpPage() {
                     email: e.target.value,
                   });
                 }}
-                className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none`}
+                className="w-full bg-surface/60 border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="text-xs font-semibold text-subtext tracking-wider block mb-2">
+              <Label className="text-xs font-semibold text-subtext tracking-wider mb-2">
                 PASSWORD
-              </label>
+              </Label>
               <div className="relative">
-                <input
+                <Input
                   placeholder="••••••••"
                   type={signUpFormState.showPassword ? "text" : "password"}
                   value={signUpFormState.password}
@@ -88,30 +98,35 @@ export default function SignUpPage() {
                       password: e.target.value,
                     });
                   }}
-                  className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none pr-11`}
+                  className="w-full bg-surface/60 border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30 pr-11"
                 />
-
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() =>
                     setSignUpFormState({
                       ...signUpFormState,
                       showPassword: !signUpFormState.showPassword,
                     })
                   }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext transition-colors"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext h-auto px-2 py-1"
                 >
-                  {signUpFormState.showPassword ? "Hide" : "Show"}
-                </button>
+                  {signUpFormState.showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </Button>
               </div>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="text-xs font-semibold text-subtext tracking-wider block mb-2">
+              <Label className="text-xs font-semibold text-subtext tracking-wider mb-2">
                 CONFIRM PASSWORD
-              </label>
+              </Label>
               <div className="relative">
-                <input
+                <Input
                   placeholder="••••••••"
                   type={
                     signUpFormState.showConfirmPassword ? "text" : "password"
@@ -123,34 +138,39 @@ export default function SignUpPage() {
                       confirmPassword: e.target.value,
                     });
                   }}
-                  className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none pr-11`}
+                  className="w-full bg-surface/60 border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30 pr-11"
                 />
-
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() =>
                     setSignUpFormState({
                       ...signUpFormState,
                       showConfirmPassword: !signUpFormState.showConfirmPassword,
                     })
                   }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext transition-colors"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext h-auto px-2 py-1"
                 >
-                  {signUpFormState.showConfirmPassword ? "Hide" : "Show"}
-                </button>
+                  {signUpFormState.showConfirmPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </Button>
               </div>
             </div>
 
             {/* Submit */}
-            <button
+            <Button
               onClick={handleSingInButtonClick}
-              className="w-full bg-purple text-card font-semibold py-3 rounded-xl hover:bg-purple/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple/20 mt-1"
+              className="w-full bg-purple text-card font-semibold py-3 h-auto rounded-xl hover:bg-purple/90 shadow-lg shadow-purple/20 mt-1"
             >
               Sign up
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardContent>
+        </Card>
         <p className="text-center text-sm text-subtle mt-5">
-         Already have an account?{" "}
+          Already have an account?{" "}
           <Link
             href="/login"
             className="text-purple font-semibold hover:underline"
