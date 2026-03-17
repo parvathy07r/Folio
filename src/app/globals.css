@@ -32,33 +32,33 @@
 }
 
 :root {
-  --background: rgb(15 15 23);
-  --foreground: rgb(205 214 244);
-  --card: rgb(30 30 46);
-  --card-foreground: rgb(205 214 244);
-  --popover: rgb(30 30 46);
-  --popover-foreground: rgb(205 214 244);
-  --primary: rgb(203 166 247);
-  --primary-foreground: rgb(30 30 46);
-  --secondary: rgb(19 19 31);
-  --secondary-foreground: rgb(205 214 244);
-  --muted: rgb(69 71 90);
-  --muted-foreground: rgb(88 91 112);
-  --accent: rgb(30 30 46);
-  --accent-foreground: rgb(205 214 244);
-  --destructive: rgb(243 139 168);
-  --border: rgb(49 50 68);
-  --input: rgb(49 50 68);
-  --ring: rgb(203 166 247);
+  --background: oklch(from rgb(15 15 23) l c h);
+  --foreground: oklch(from rgb(205 214 244) l c h);
+  --card: oklch(from rgb(30 30 46) l c h);
+  --card-foreground: oklch(from rgb(205 214 244) l c h);
+  --popover: oklch(from rgb(30 30 46) l c h);
+  --popover-foreground: oklch(from rgb(205 214 244) l c h);
+  --primary: oklch(from rgb(203 166 247) l c h);
+  --primary-foreground: oklch(from rgb(30 30 46) l c h);
+  --secondary: oklch(from rgb(19 19 31) l c h);
+  --secondary-foreground: oklch(from rgb(205 214 244) l c h);
+  --muted: oklch(from rgb(69 71 90) l c h);
+  --muted-foreground: oklch(from rgb(88 91 112) l c h);
+  --accent: oklch(from rgb(30 30 46) l c h);
+  --accent-foreground: oklch(from rgb(205 214 244) l c h);
+  --destructive: oklch(from rgb(243 139 168) l c h);
+  --border: oklch(from rgb(49 50 68) l c h);
+  --input: oklch(from rgb(49 50 68) l c h);
+  --ring: oklch(from rgb(203 166 247) l c h);
   --radius: 0.75rem;
-  --sidebar: rgb(19 19 31);
-  --sidebar-foreground: rgb(205 214 244);
-  --sidebar-primary: rgb(203 166 247);
-  --sidebar-primary-foreground: rgb(30 30 46);
-  --sidebar-accent: rgb(30 30 46);
-  --sidebar-accent-foreground: rgb(205 214 244);
-  --sidebar-border: rgb(49 50 68);
-  --sidebar-ring: rgb(203 166 247);
+  --sidebar: oklch(from rgb(19 19 31) l c h);
+  --sidebar-foreground: oklch(from rgb(205 214 244) l c h);
+  --sidebar-primary: oklch(from rgb(203 166 247) l c h);
+  --sidebar-primary-foreground: oklch(from rgb(30 30 46) l c h);
+  --sidebar-accent: oklch(from rgb(30 30 46) l c h);
+  --sidebar-accent-foreground: oklch(from rgb(205 214 244) l c h);
+  --sidebar-border: oklch(from rgb(49 50 68) l c h);
+  --sidebar-ring: oklch(from rgb(203 166 247) l c h);
 }
 
 @theme inline {
