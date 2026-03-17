@@ -1,13 +1,17 @@
 "use client";
 import { getAvatar } from "@/utils";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Home, StickyNote, Bot, Plus, LogOut } from "lucide-react";
 
 const NAV_ITEMS = [
-  { id: "Home", icon: "⌂", label: "Home", href: "/dashboard" },
-  { id: "Notes", icon: "◈", label: "Notes", href: "/dashboard/notes" },
+  { id: "Home", icon: Home, label: "Home", href: "/dashboard" },
+  { id: "Notes", icon: StickyNote, label: "Notes", href: "/dashboard/notes" },
   {
     id: "AI Assistant",
-    icon: "◎",
+    icon: Bot,
     label: "AI Assistant",
     href: "/dashboard/chat",
   },
@@ -42,48 +46,53 @@ export default function Sidebar() {
       </p>
       <nav className="flex flex-col gap-0.5">
         {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
           return (
-            <Link
+            <Button
               key={item.id}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium hover:bg-card hover:text-text transition-all`}
+              variant="ghost"
+              className="justify-start gap-3 px-3 py-2.5 h-auto rounded-xl text-sm font-medium text-subtext hover:bg-card hover:text-text"
+              render={<Link href={item.href} />}
             >
-              <span>{item.icon}</span>
+              <Icon className="size-4" />
               {item.label}
-            </Link>
+            </Button>
           );
         })}
       </nav>
 
+      <Separator className="my-4" />
+
       {/* ── Tags ── */}
-      <p className="text-[11px] font-bold tracking-widest text-subtle uppercase px-3 mt-5 mb-1">
+      <p className="text-[11px] font-bold tracking-widest text-subtle uppercase px-3 mb-1">
         Tags
       </p>
       <div className="flex flex-col gap-0.5">
         {TAGS.map((tag) => (
-          <Link
+          <Button
             key={tag.label}
-            href="#"
+            variant="ghost"
+            className="justify-start gap-3 px-3 py-2.5 h-auto rounded-xl text-sm font-medium text-subtext hover:bg-card hover:text-text"
             onClick={() => console.log(`Tag clicked: ${tag.label}`)}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-subtext hover:bg-card hover:text-text transition-all"
           >
             <span
               className="w-2 h-2 rounded-full flex-shrink-0"
               style={{ background: tag.color }}
             />
             {tag.label}
-          </Link>
+          </Button>
         ))}
       </div>
 
       {/* ── New Note button ── */}
       <div className="mt-auto pt-4">
-        <button
+        <Button
           onClick={() => console.log("New Note clicked")}
-          className="w-full bg-purple text-card font-semibold py-2.5 rounded-xl text-sm hover:bg-purple/90 transition-all shadow-lg shadow-purple/20"
+          className="w-full bg-purple text-card font-semibold py-2.5 h-auto rounded-xl text-sm hover:bg-purple/90 shadow-lg shadow-purple/20"
         >
-          + New Note
-        </button>
+          <Plus className="size-4" />
+          New Note
+        </Button>
       </div>
 
       {/* ── User profile + logout ── */}
@@ -92,9 +101,11 @@ export default function Sidebar() {
         className="mt-3 flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer hover:bg-card transition-all group"
       >
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple to-sky flex items-center justify-center text-xs font-bold text-card flex-shrink-0">
-          {getAvatar(MOCK_USER.name)}
-        </div>
+        <Avatar className="size-8">
+          <AvatarFallback className="bg-gradient-to-br from-purple to-sky text-xs font-bold text-card">
+            {getAvatar(MOCK_USER.name)}
+          </AvatarFallback>
+        </Avatar>
         {/* Info */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-semibold text-text truncate">
@@ -103,9 +114,7 @@ export default function Sidebar() {
           <p className="text-xs text-subtle truncate">{MOCK_USER.email}</p>
         </div>
         {/* Logout icon */}
-        <span className="text-subtle text-xs group-hover:text-rose transition-colors">
-          ⏻
-        </span>
+        <LogOut className="size-3.5 text-subtle group-hover:text-rose transition-colors" />
       </div>
     </div>
   );

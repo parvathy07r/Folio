@@ -3,6 +3,17 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,23 +34,23 @@ export default function LoginPage() {
     <div className="min-h-screen bg-base flex items-center justify-center px-4 relative overflow-hidden">
       <div className="w-full max-w-md relative z-10">
         {/* Card */}
-        <div className="bg-surface/80 border border-border rounded-2xl p-9 backdrop-blur-md shadow-2xl">
-          <div className="mb-7">
-            <h1 className="font-playfair text-2xl font-bold text-text mb-1">
+        <Card className="bg-surface/80 border-border rounded-2xl p-9 backdrop-blur-md shadow-2xl ring-0">
+          <CardHeader className="p-0 mb-7">
+            <CardTitle className="font-playfair text-2xl font-bold text-text">
               Welcome back
-            </h1>
-            <p className="text-subtle text-sm">
+            </CardTitle>
+            <CardDescription className="text-subtle text-sm">
               Sign in to your Folio workspace
-            </p>
-          </div>
+            </CardDescription>
+          </CardHeader>
 
-          <div className="flex flex-col gap-4">
+          <CardContent className="p-0 flex flex-col gap-4">
             {/* Email */}
             <div>
-              <label className="text-xs font-semibold text-subtext tracking-wider block mb-2">
+              <Label className="text-xs font-semibold text-subtext tracking-wider mb-2">
                 EMAIL
-              </label>
-              <input
+              </Label>
+              <Input
                 type="email"
                 placeholder="you@example.com"
                 value={loginFormState.email}
@@ -49,17 +60,17 @@ export default function LoginPage() {
                     email: e.target.value,
                   });
                 }}
-                className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none`}
+                className="w-full bg-surface/60 border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="text-xs font-semibold text-subtext tracking-wider block mb-2">
+              <Label className="text-xs font-semibold text-subtext tracking-wider mb-2">
                 PASSWORD
-              </label>
+              </Label>
               <div className="relative">
-                <input
+                <Input
                   placeholder="••••••••"
                   type={loginFormState.showPassword ? "text" : "password"}
                   value={loginFormState.password}
@@ -69,33 +80,39 @@ export default function LoginPage() {
                       password: e.target.value,
                     });
                   }}
-                  className={`w-full bg-surface/60 border rounded-xl px-4 py-3 text-text text-sm placeholder-muted transition-colors focus:border-purple focus:outline-none pr-11`}
+                  className="w-full bg-surface/60 border-border rounded-xl px-4 py-3 h-auto text-text text-sm placeholder:text-muted-foreground focus-visible:border-purple focus-visible:ring-purple/30 pr-11"
                 />
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() =>
                     setLoginFormState({
                       ...loginFormState,
                       showPassword: !loginFormState.showPassword,
                     })
                   }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext transition-colors"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 text-subtle hover:text-subtext h-auto px-2 py-1"
                 >
-                  {loginFormState.showPassword ? "Hide" : "Show"}
-                </button>
+                  {loginFormState.showPassword ? (
+                    <EyeOff className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </Button>
               </div>
             </div>
 
             {/* Submit */}
-            <button
+            <Button
               onClick={handleSingInButtonClick}
-              className="w-full bg-purple text-card font-semibold py-3 rounded-xl hover:bg-purple/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple/20 mt-1"
+              className="w-full bg-purple text-card font-semibold py-3 h-auto rounded-xl hover:bg-purple/90 shadow-lg shadow-purple/20 mt-1"
             >
               Sign in
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardContent>
+        </Card>
         <p className="text-center text-sm text-subtle mt-5">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link
             href="/signup"
             className="text-purple font-semibold hover:underline"
