@@ -1,73 +1,30 @@
 "use client";
 
-import { getDate, getGreeting } from "@/utils";
-import { useState } from "react";
-import NoteCard from "@/components/noteCard";
-import { MOCK_NOTES } from "@/data/constants";
-import Searchbar from "@/components/Searchbar";
-import { Badge } from "@/components/ui/badge";
+import NotesSidebar from "@/components/NotesSidebar";
 import { Separator } from "@/components/ui/separator";
 
 export default function HomePage() {
-  const [search, setSearch] = useState("");
-  const pinnedNotes = MOCK_NOTES.filter((n) => n.pinned);
-  const recentNotes = [...MOCK_NOTES]
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    )
-    .slice(0, 4);
-
   return (
-    <div className="min-h-screen p-10 overflow-y-auto">
-      {/* header */}
-      <div className="mb-10">
-        <p className="text-subtle text-sm mb-2">{getDate()}</p>
-        {/* note: dynamically rende the user name  */}
-        <h1 className="font-playfair text-4xl font-bold text-text leading-tight">
-          {getGreeting()}, Alex ✦
-        </h1>
-        <p className="text-subtle text-base mt-2">
-          <Badge
-            variant="secondary"
-            className="text-subtle bg-card border-none rounded-lg px-2 py-0.5 text-xs"
-          >
-            {MOCK_NOTES.length} notes
-          </Badge>{" "}
-          in your workspace
-        </p>
-      </div>
+    <div className="h-full min-h-0 flex bg-base">
+      <NotesSidebar />
 
-      {/* search */}
-      <Searchbar search={search} setSearch={setSearch} />
-
-      {/* pinned */}
-      {pinnedNotes.length > 0 && (
-        <div className="mb-10">
-          <p className="text-xs font-bold tracking-widest text-subtle uppercase mb-3">
-            Pinned
-          </p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
-            {pinnedNotes.map((note) => (
-              <NoteCard key={note.id} note={note} />
-            ))}
+      <main className="flex-1 min-h-0 flex flex-col">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="min-w-0">
+            <h1 className="font-playfair text-xl font-bold text-text truncate">
+              Notes
+            </h1>
           </div>
         </div>
-      )}
 
-      <Separator className="mb-10" />
+        <Separator />
 
-      {/* recent */}
-      <div>
-        <p className="text-xs font-bold tracking-widest text-subtle uppercase mb-3">
-          Recent
-        </p>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
-          {recentNotes.map((note) => (
-            <NoteCard key={note.id} note={note} />
-          ))}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
+          <div className="h-full flex items-center justify-center text-subtle">
+            Select a note, or create a new one.
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
