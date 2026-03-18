@@ -214,7 +214,7 @@ export default function NotesSidebar() {
         )}
       </div>
 
-      <div className="p-3">
+      <div>
         <Button
           variant="ghost"
           className="w-full cursor-pointer justify-between items-center gap-3 px-3 py-3 h-auto rounded-xl text-left"
@@ -223,20 +223,20 @@ export default function NotesSidebar() {
             <div className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-xs font-semibold text-text flex-shrink-0">
               {getAvatar(name)}
             </div>
-            <p className="text-sm font-semibold truncate">{name}</p>
+            {!collapsed && (
+              <p className="text-sm font-semibold truncate">{name}</p>
+            )}
           </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer size-8 rounded-lg text-subtle hover:text-text"
-            onClick={() => {
-              handleLogout();
-            }}
-            aria-label="Logout"
-          >
-            <LogOut className="size-4" />
-          </Button>
+          {!collapsed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="cursor-pointer size-8 rounded-lg text-subtle hover:text-text"
+              aria-label="Logout"
+            >
+              <LogOut className="size-4" />
+            </Button>
+          )}
         </Button>
       </div>
     </aside>
