@@ -117,6 +117,25 @@ export default function NotesSidebar() {
         </Button>
       </div>
 
+      {collapsed && (
+        <div className="px-2 pb-2">
+          <Button
+            onClick={onCreateNote}
+            variant="ghost"
+            className="w-full cursor-pointer justify-start items-center gap-3 px-3 py-3 h-auto rounded-xl text-left text-subtext hover:bg-card hover:text-text"
+          >
+            <Plus className="size-4" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="w-full cursor-pointer justify-start items-center gap-3 px-3 py-3 h-auto rounded-xl text-left text-subtext hover:bg-card hover:text-text"
+          >
+            <Search className="size-4" />
+          </Button>
+        </div>
+      )}
+
       {/* actions */}
       {!collapsed && (
         <div className="px-2 pb-2">
