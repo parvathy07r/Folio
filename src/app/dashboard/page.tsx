@@ -1,8 +1,5 @@
 "use client";
 
-import NotesSidebar from "@/components/NotesSidebar";
-import { Separator } from "@/components/ui/separator";
-
 export default function HomePage() {
   return (
     <div className="h-full min-h-0 flex bg-base">
