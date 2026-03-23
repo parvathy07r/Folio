@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   ChevronRight,
+  FileText,
   PanelLeft,
   Plus,
   Search,
@@ -95,8 +96,8 @@ export default function NotesSidebar() {
   return (
     <aside
       className={
-        "h-full bg-sidebar border-r border-border flex flex-col flex-shrink-0 " +
-        (collapsed ? "w-[56px]" : "w-[300px]")
+        "h-full bg-sidebar border-border flex flex-col flex-shrink-0 " +
+        (collapsed ? "w-[56px]" : "w-[220px]")
       }
     >
       {/* header */}
@@ -106,32 +107,35 @@ export default function NotesSidebar() {
           (collapsed ? "justify-center" : "justify-between")
         }
       >
-        {!collapsed && <span className="text-lg font-semibold">Folio</span>}
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
+          type="button"
           onClick={() => setCollapsed((v) => !v)}
-          className="rounded-xl text-subtext hover:text-text cursor-pointer"
+          className={
+            "group flex items-center gap-3 rounded-xl cursor-pointer hover:bg-card px-2 py-2 -mx-2 " +
+            (collapsed ? "justify-center" : "justify-start")
+          }
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <PanelLeft className="size-4" />
-        </Button>
+          <FileText className={" text-subtext group-hover:text-text size-5"} />
+          {!collapsed && (
+            <div className="flex flex-col items-start leading-tight ">
+              <span className="text-lg font-semibold text-text">Folio</span>
+              <span className="text-[10px] tracking-widest text-subtle uppercase">
+                Personal workspace
+              </span>
+            </div>
+          )}
+        </button>
       </div>
 
       {collapsed && (
-        <div className="px-2 pb-2">
+        <div className="px-2 pb-2 ">
           <Button
             onClick={onCreateNote}
             variant="ghost"
-            className="w-full cursor-pointer justify-start items-center gap-3 px-3 py-3 h-auto rounded-xl text-left text-subtext hover:bg-card hover:text-text"
+            className="w-full cursor-pointer justify-center items-center gap-2 px-3 py-3 h-auto rounded-lg bg-transparent text-subtext hover:bg-transparent hover:text-text font-normal"
           >
-            <Plus className="size-4" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            className="w-full cursor-pointer justify-start items-center gap-3 px-3 py-3 h-auto rounded-xl text-left text-subtext hover:bg-card hover:text-text"
-          >
-            <Search className="size-4" />
+            <Plus className="size-4 stroke-[1.5]" />
           </Button>
         </div>
       )}
@@ -142,18 +146,10 @@ export default function NotesSidebar() {
           <Button
             onClick={onCreateNote}
             variant="ghost"
-            className="w-full cursor-pointer justify-start items-center gap-3 px-3 py-3 h-auto rounded-xl text-left text-subtext hover:bg-card hover:text-text"
+            className="w-full cursor-pointer justify-center items-center gap-2 px-3 py-3 h-auto rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-normal"
           >
-            <Plus className="size-4" />
-            New note
-          </Button>
-
-          <Button
-            variant="ghost"
-            className="w-full cursor-pointer justify-start items-center gap-3 px-3 py-3 h-auto rounded-xl text-left text-subtext hover:bg-card hover:text-text"
-          >
-            <Search className="size-4" />
-            Search
+            <Plus className="size-4 stroke-[1.5]" />
+            New Note
           </Button>
         </div>
       )}
@@ -167,11 +163,16 @@ export default function NotesSidebar() {
         {!collapsed && (
           <>
             <div className="px-2 py-2">
-              <p className="text-xs text-subtle font-semibold">Recents</p>
+              <p className="text-[10px] text-subtext">RECENT NOTES</p>
             </div>
 
             {filteredNotes.map((note) => {
               const active = note.id === activeNoteId;
+              const previewRaw = (note.content ?? "").trim();
+              const preview =
+                previewRaw.length > 60
+                  ? `${previewRaw.slice(0, 60)}…`
+                  : previewRaw;
 
               return (
                 <div key={note.id} className="relative">
@@ -179,16 +180,21 @@ export default function NotesSidebar() {
                     variant="ghost"
                     onClick={() => onSelectNote(note.id)}
                     className={
-                      "w-full justify-start cursor-pointer items-center gap-3 px-2 py-2 h-auto rounded-xl text-left group " +
+                      "w-full justify-start cursor-pointer items-center px-3 py-3 h-auto rounded-xl text-left group " +
                       (active
                         ? "bg-card text-text"
                         : "text-subtext hover:bg-card hover:text-text")
                     }
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold truncate">
+                      <p className="text-[12px] text-text font-bold truncate">
                         {note.title}
                       </p>
+                      {!!preview && (
+                        <p className="text-[11px] text-subtext font-normal truncate">
+                          {preview}
+                        </p>
+                      )}
                     </div>
 
                     <Button

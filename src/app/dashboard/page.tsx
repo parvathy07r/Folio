@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 export default function HomePage() {
   return (
     <div className="h-full min-h-0 flex bg-base">
-      <NotesSidebar />
+     
 
       <main className="flex-1 min-h-0 flex flex-col">
         <div className="flex items-center justify-between px-6 py-4">
@@ -16,8 +16,6 @@ export default function HomePage() {
             </h1>
           </div>
         </div>
-
-        <Separator />
 
         <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
           <div className="h-full flex items-center justify-center text-subtle">
