@@ -1,18 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { pool } from "@/lib/db";
 
-type Params = { params: { id: string } };
+type Context = { params: Promise<{ id: string }> };
 
-export async function GET(_req: Request, { params }: Params) {
-  const id = Number(params.id);
-  if (!Number.isFinite(id)) {
+export async function GET(_req: NextRequest, context: Context) {
+  const { id } = await context.params;
+  const noteId = Number(id);
+  if (!Number.isFinite(noteId)) {
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
 
   try {
     const res = await pool.query(
-      "SELECT id, title, content, tag, color, pinned, user_id AS \"userId\", created_at AS \"createdAt\", updated_at AS \"updatedAt\" FROM notes WHERE id = $1 AND user_id = $2 LIMIT 1",
-      [id, 1],
+      'SELECT id, title, content, tag, color, pinned, user_id AS "userId", created_at AS "createdAt", updated_at AS "updatedAt" FROM notes WHERE id = $1 AND user_id = $2 LIMIT 1',
+      [noteId, 1],
     );
 
     if (res.rowCount === 0) {
@@ -22,13 +23,17 @@ export async function GET(_req: Request, { params }: Params) {
     return NextResponse.json(res.rows[0]);
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to fetch note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch note" },
+      { status: 500 },
+    );
   }
 }
 
-export async function PATCH(req: Request, { params }: Params) {
-  const id = Number(params.id);
-  if (!Number.isFinite(id)) {
+export async function PATCH(req: NextRequest, context: Context) {
+  const { id } = await context.params;
+  const noteId = Number(id);
+  if (!Number.isFinite(noteId)) {
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
 
@@ -51,7 +56,8 @@ export async function PATCH(req: Request, { params }: Params) {
 
     if (typeof body.title === "string") push("title", body.title.trim());
     if (typeof body.content === "string") push("content", body.content);
-    if (body.tag === null || typeof body.tag === "string") push("tag", body.tag);
+    if (body.tag === null || typeof body.tag === "string")
+      push("tag", body.tag);
     if (typeof body.color === "number") push("color", body.color);
     if (typeof body.pinned === "boolean") push("pinned", body.pinned);
 
@@ -62,7 +68,7 @@ export async function PATCH(req: Request, { params }: Params) {
       );
     }
 
-    values.push(id);
+    values.push(noteId);
     values.push(1);
 
     const res = await pool.query(
@@ -77,20 +83,24 @@ export async function PATCH(req: Request, { params }: Params) {
     return NextResponse.json(res.rows[0]);
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to update note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update note" },
+      { status: 500 },
+    );
   }
 }
 
-export async function DELETE(_req: Request, { params }: Params) {
-  const id = Number(params.id);
-  if (!Number.isFinite(id)) {
+export async function DELETE(_req: NextRequest, context: Context) {
+  const { id } = await context.params;
+  const noteId = Number(id);
+  if (!Number.isFinite(noteId)) {
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
   }
 
   try {
     const res = await pool.query(
       "DELETE FROM notes WHERE id = $1 AND user_id = $2",
-      [id, 1],
+      [noteId, 1],
     );
 
     if (res.rowCount === 0) {
@@ -100,6 +110,9 @@ export async function DELETE(_req: Request, { params }: Params) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Failed to delete note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete note" },
+      { status: 500 },
+    );
   }
 }
