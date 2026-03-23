@@ -97,7 +97,7 @@ export default function NotesSidebar() {
     <aside
       className={
         "h-full bg-sidebar border-border flex flex-col flex-shrink-0 " +
-        (collapsed ? "w-[56px]" : "w-[220px]")
+        (collapsed ? "w-[56px]" : "w-[260px]")
       }
     >
       {/* header */}

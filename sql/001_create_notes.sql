@@ -1,0 +1,28 @@
+CREATE TABLE IF NOT EXISTS notes (
+  id BIGSERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL DEFAULT '',
+  tag VARCHAR(50),
+  color INTEGER NOT NULL DEFAULT 0,
+  pinned BOOLEAN NOT NULL DEFAULT FALSE,
+  user_id BIGINT NOT NULL DEFAULT 1,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
+CREATE INDEX IF NOT EXISTS idx_notes_updated_at ON notes(updated_at DESC);
+
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_notes_updated_at ON notes;
+CREATE TRIGGER trg_notes_updated_at
+BEFORE UPDATE ON notes
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
