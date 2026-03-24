@@ -4,14 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Note } from "@/types";
 import { MOCK_NOTES } from "@/data/constants";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
-  ChevronRight,
   FileText,
-  PanelLeft,
   Plus,
-  Search,
   MoreHorizontal,
   Trash2,
   LogOut,
@@ -25,14 +20,21 @@ export default function NotesSidebar() {
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const [notes, setNotes] = useState<Note[]>(MOCK_NOTES);
-  const [activeNoteId, setActiveNoteId] = useState<number | null>(
-    MOCK_NOTES[0]?.id ?? null,
-  );
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
+  const fetchNotes = async () => {
+    const response = await fetch("/api/notes");
+    const data = await response.json();
+    console.log(data);
+    setNotes(data);
   };
+  
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+
 
   useEffect(() => {
     if (openMenuFor === null) return;
