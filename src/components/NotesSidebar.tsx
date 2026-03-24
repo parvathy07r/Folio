@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import type { Note } from "@/types";
 import { MOCK_NOTES } from "@/data/constants";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,8 @@ import {
 import { getAvatar } from "@/utils";
 
 export default function NotesSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
   const name = "John Doe";
   const [collapsed, setCollapsed] = useState(true);
   const [search, setSearch] = useState("");
@@ -33,6 +36,14 @@ export default function NotesSidebar() {
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  useEffect(() => {
+    const match = pathname.match(/^\/dashboard\/notes\/(\d+)$/);
+    if (!match) return;
+    const id = Number(match[1]);
+    if (Number.isNaN(id)) return;
+    setActiveNoteId(id);
+  }, [pathname]);
 
 
 
@@ -66,33 +77,52 @@ export default function NotesSidebar() {
     });
   }, [notes, search]);
 
-  const onSelectNote = (id: number) => {
+  const onSelectNote = async (id: number) => {
+    console.log(id);
     setActiveNoteId(id);
+    try {
+      router.push(`/dashboard/notes/${id}`);
+    } finally {
+    }
   };
 
-  const onCreateNote = () => {
-    const nextId = notes.reduce((max, n) => Math.max(max, n.id), 0) + 1;
-    const now = new Date();
-    const newNote: Note = {
-      id: nextId,
-      title: "Untitled",
-      content: "",
-      tag: "personal",
-      color: 0,
-      pinned: false,
-      createdAt: now,
-      updatedAt: now,
-      userId: 1,
-    };
-
-    setNotes((prev) => [newNote, ...prev]);
-    setActiveNoteId(newNote.id);
+  const onDeleteNote = async (id: number) => {
+    console.log(id);
+    try {
+      const response = await fetch(`/api/notes/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      console.log(data);
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+      if (activeNoteId === id) {
+        setActiveNoteId(null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const onDeleteNote = (id: number) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-    setOpenMenuFor(null);
-    setActiveNoteId((prev) => (prev === id ? null : prev));
+  const onCreateNote = async () => {
+    const response = await fetch("/api/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: "Untitled",
+        content: "",
+        tag: "personal",
+        color: 0,
+        pinned: false,
+        userId: 1,
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+    setNotes((prev) => [data, ...prev]);
+    setActiveNoteId(data.id);
+    router.push(`/dashboard/notes/${data.id}`);
   };
 
   return (

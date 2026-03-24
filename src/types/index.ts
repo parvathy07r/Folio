@@ -6,7 +6,7 @@ export interface User {
 }
 
 export interface Note {
-  id: number | string;
+  id: number ;
   title: string;
   content: string;
   tag: NoteTag;
