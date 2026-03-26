@@ -1,38 +1,67 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import type { Note } from "@/types";
 import { MOCK_NOTES } from "@/data/constants";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
-  ChevronRight,
   FileText,
-  PanelLeft,
   Plus,
-  Search,
   MoreHorizontal,
   Trash2,
   LogOut,
+  NotebookPen,
 } from "lucide-react";
 import { getAvatar } from "@/utils";
 
 export default function NotesSidebar() {
+  const router = useRouter();
+  const pathname = usePathname();
   const name = "John Doe";
   const [collapsed, setCollapsed] = useState(true);
   const [search, setSearch] = useState("");
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const [notes, setNotes] = useState<Note[]>(MOCK_NOTES);
-  const [activeNoteId, setActiveNoteId] = useState<number | null>(
-    MOCK_NOTES[0]?.id ?? null,
-  );
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
 
-  const handleLogout = () => {
-    console.log("Logout clicked");
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ id: number; title: string }>).detail;
+      if (!detail) return;
+      setNotes((prev) =>
+        prev.map((n) =>
+          n.id === detail.id ? { ...n, title: detail.title } : n,
+        ),
+      );
+    };
+
+    window.addEventListener("note:title-updated", handler);
+    return () => window.removeEventListener("note:title-updated", handler);
+  }, []);
+
+  const fetchNotes = async () => {
+    const response = await fetch("/api/notes");
+    const data = await response.json();
+    setNotes(data);
+    if (data.length > 0 && activeNoteId === null) {
+      setActiveNoteId(data[0].id);
+    }
   };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  useEffect(() => {
+    const match = pathname.match(/^\/dashboard\/notes\/(\d+)$/);
+    if (!match) return;
+    const id = Number(match[1]);
+    if (Number.isNaN(id)) return;
+    setActiveNoteId(id);
+  }, [pathname]);
 
   useEffect(() => {
     if (openMenuFor === null) return;
@@ -64,34 +93,71 @@ export default function NotesSidebar() {
     });
   }, [notes, search]);
 
-  const onSelectNote = (id: number) => {
+  const onSelectNote = async (id: number) => {
     setActiveNoteId(id);
+    try {
+      router.push(`/dashboard/notes/${String(id)}`);
+    } finally {
+    }
   };
 
-  const onCreateNote = () => {
-    const nextId = notes.reduce((max, n) => Math.max(max, n.id), 0) + 1;
-    const now = new Date();
-    const newNote: Note = {
-      id: nextId,
-      title: "Untitled",
-      content: "",
-      tag: "personal",
-      color: 0,
-      pinned: false,
-      createdAt: now,
-      updatedAt: now,
-      userId: 1,
-    };
-
-    setNotes((prev) => [newNote, ...prev]);
-    setActiveNoteId(newNote.id);
+  const onDeleteNote = async (id: number) => {
+    try {
+      const response = await fetch(`/api/notes/${id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+      if (activeNoteId === id) {
+        setActiveNoteId(null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const onDeleteNote = (id: number) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
-    setOpenMenuFor(null);
-    setActiveNoteId((prev) => (prev === id ? null : prev));
+  const onCreateNote = async () => {
+    const response = await fetch("/api/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: "Untitled",
+        content: "",
+        tag: "personal",
+        color: 0,
+        pinned: false,
+        userId: 1,
+      }),
+    });
+    const data = await response.json();
+    setNotes((prev) => [data, ...prev]);
+    setActiveNoteId(data.id);
+    router.push(`/dashboard/notes/${data.id}`);
   };
+
+  function getLexicalPreview(content: string): string {
+    if (!content) return "";
+
+    try {
+      const parsed = JSON.parse(content);
+
+      const texts: string[] = [];
+
+      for (const block of parsed.root.children) {
+        for (const child of block.children) {
+          if (child.type === "text" && child.text) {
+            texts.push(child.text);
+          }
+        }
+      }
+
+      return texts.join(" ").trim();
+    } catch {
+      return content;
+    }
+  }
 
   return (
     <aside
@@ -116,7 +182,9 @@ export default function NotesSidebar() {
           }
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <FileText className={" text-subtext group-hover:text-text size-5"} />
+          <span className="inline-flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20 transition-transform group-hover:scale-[1.02]">
+            <NotebookPen className="size-5 stroke-[1.8]" />
+          </span>
           {!collapsed && (
             <div className="flex flex-col items-start leading-tight ">
               <span className="text-lg font-semibold text-text">Folio</span>
@@ -168,7 +236,7 @@ export default function NotesSidebar() {
 
             {filteredNotes.map((note) => {
               const active = note.id === activeNoteId;
-              const previewRaw = (note.content ?? "").trim();
+              const previewRaw = getLexicalPreview(note.content ?? "");
               const preview =
                 previewRaw.length > 60
                   ? `${previewRaw.slice(0, 60)}…`

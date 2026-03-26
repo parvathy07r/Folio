@@ -28,7 +28,6 @@ export default function SignUpPage() {
   });
 
   const handleSingInButtonClick = () => {
-    console.log(signUpFormState);
     router.push("/login");
   };
 

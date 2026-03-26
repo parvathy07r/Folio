@@ -26,7 +26,6 @@ async function main() {
     .sort((a, b) => a.localeCompare(b));
 
   if (files.length === 0) {
-    console.log(`No migration files found in ${sqlDir}`);
     return;
   }
 
@@ -54,14 +53,10 @@ async function main() {
         [filename],
       );
       if (already.rowCount) {
-        console.log(`Skipping ${filename} (already applied)`);
         continue;
       }
-
       const fullPath = path.join(sqlDir, filename);
       const sql = await readFile(fullPath, "utf8");
-
-      console.log(`Applying ${filename}...`);
       await client.query("BEGIN");
       try {
         await client.query(sql);
@@ -73,8 +68,6 @@ async function main() {
         await client.query("ROLLBACK");
         throw e;
       }
-
-      console.log(`Applied ${filename}`);
     }
   } finally {
     await client.end();
@@ -82,6 +75,5 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err);
   process.exit(1);
 });

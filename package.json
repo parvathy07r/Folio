@@ -5,14 +5,22 @@
   "scripts": {
     "dev": "next dev",
     "db:migrate": "node scripts/db-migrate.mjs",
+    "migrate:content": "tsx --env-file=.env.local scripts/migrate-content.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
+    "@lexical/history": "^0.42.0",
+    "@lexical/react": "^0.42.0",
+    "@lexical/rich-text": "^0.42.0",
+    "@lexical/selection": "^0.42.0",
+    "@lexical/utils": "^0.42.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.3.1",
+    "lexical": "^0.42.0",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "pg": "^8.16.3",
@@ -31,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
