@@ -1,63 +1,54 @@
-import { pool } from "@/lib/db";
+"use client";
 
-export default async function NotePage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
-  const noteId = Number(id);
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import Editor from "@/components/editor";
+import type { Note } from "@/types";
 
-  if (!Number.isFinite(noteId)) {
-    return (
-      <div className="h-full flex items-center justify-center text-subtle">
-        Invalid note id
-      </div>
-    );
-  }
+export default function NoteEditorPage() {
+  const { id } = useParams();
+  const [note, setNote] = useState<Note | null>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const res = await pool.query(
-    "SELECT id, title, content, tag, color, pinned, user_id AS \"userId\", created_at AS \"createdAt\", updated_at AS \"updatedAt\" FROM notes WHERE id = $1 AND user_id = $2",
-    [noteId, 1],
-  );
+  useEffect(() => {
+    fetch(`/api/notes/${id}`)
+      .then((r) => r.json())
+      .then(setNote);
+  }, [id]);
 
-  const note = res.rows[0] as
-    | {
-        id: number;
-        title: string;
-        content: string;
-        tag: string | null;
-        color: number;
-        pinned: boolean;
-        userId: number;
-        createdAt: Date;
-        updatedAt: Date;
-      }
-    | undefined;
+  const handleSave = (content: string) => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      await fetch(`/api/notes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+    }, 800);
+  };
 
-  if (!note) {
-    return (
-      <div className="h-full flex items-center justify-center text-subtle">
-        Note not found
-      </div>
-    );
-  }
+  if (!note) return <div className="p-8 text-muted-foreground">Loading...</div>;
 
   return (
-    <div className="h-full min-h-0 flex flex-col">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="min-w-0">
-          <h1 className="font-playfair text-xl font-bold text-text truncate">
-            {note.title}
-          </h1>
-        </div>
-      </div>
+    <div className="flex flex-col h-full overflow-y-auto">
+      <input
+        defaultValue={note.title}
+        className="text-4xl font-bold bg-transparent border-none outline-none text-foreground px-16 pt-16 pb-2"
+        placeholder="Untitled"
+        onBlur={(e) => {
+          fetch(`/api/notes/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title: e.target.value }),
+          });
+        }}
+      />
 
-      <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6">
-        <div className="whitespace-pre-wrap text-text leading-relaxed">
-          {note.content || "Empty note"}
-        </div>
-      </div>
+      <Editor
+        key={note.id}
+        initialContent={note.content ?? ""}
+        onChange={handleSave}
+      />
     </div>
   );
 }

@@ -5,13 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { Note } from "@/types";
 import { MOCK_NOTES } from "@/data/constants";
 import { Button } from "@/components/ui/button";
-import {
-  FileText,
-  Plus,
-  MoreHorizontal,
-  Trash2,
-  LogOut,
-} from "lucide-react";
+import { FileText, Plus, MoreHorizontal, Trash2, LogOut } from "lucide-react";
 import { getAvatar } from "@/utils";
 
 export default function NotesSidebar() {
@@ -29,10 +23,12 @@ export default function NotesSidebar() {
   const fetchNotes = async () => {
     const response = await fetch("/api/notes");
     const data = await response.json();
-    console.log(data);
     setNotes(data);
+    if (data.length > 0 && activeNoteId === null) {
+      setActiveNoteId(data[0].id);
+    }
   };
-  
+
   useEffect(() => {
     fetchNotes();
   }, []);
@@ -44,8 +40,6 @@ export default function NotesSidebar() {
     if (Number.isNaN(id)) return;
     setActiveNoteId(id);
   }, [pathname]);
-
-
 
   useEffect(() => {
     if (openMenuFor === null) return;
