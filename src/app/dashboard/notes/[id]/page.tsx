@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Editor from "@/components/editor";
 import type { Note } from "@/types";
+import { Loader2 } from "lucide-react";
 
 export default function NoteEditorPage() {
   const { id } = useParams();
@@ -70,7 +71,13 @@ export default function NoteEditorPage() {
     }, 800);
   };
 
-  if (!note) return <div className="p-8 text-muted-foreground">Loading...</div>;
+  if (!note) {
+    return (
+      <div className="h-full w-full flex items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
