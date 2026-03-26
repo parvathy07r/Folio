@@ -9,21 +9,64 @@ export default function NoteEditorPage() {
   const { id } = useParams();
   const [note, setNote] = useState<Note | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestContent = useRef<string | null>(null);
+  const titleSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const idParam = Array.isArray(id) ? id[0] : id;
 
   useEffect(() => {
-    fetch(`/api/notes/${id}`)
+    fetch(`/api/notes/${idParam}`)
       .then((r) => r.json())
       .then(setNote);
-  }, [id]);
+  }, [idParam]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimer.current) clearTimeout(saveTimer.current);
+      if (titleSaveTimer.current) clearTimeout(titleSaveTimer.current);
+      if (latestContent.current !== null) {
+        navigator.sendBeacon(
+          `/api/notes/${idParam}`,
+          new Blob([JSON.stringify({ content: latestContent.current })], {
+            type: "application/json",
+          }),
+        );
+      }
+    };
+  }, [idParam]);
+
+  const handleTitleChange = (value: string) => {
+    setNote((prev) => (prev ? { ...prev, title: value } : prev));
+
+    const numericId = note?.id ?? Number(idParam);
+    if (Number.isFinite(numericId)) {
+      window.dispatchEvent(
+        new CustomEvent("note:title-updated", {
+          detail: { id: numericId, title: value },
+        }),
+      );
+    }
+
+    if (titleSaveTimer.current) clearTimeout(titleSaveTimer.current);
+    titleSaveTimer.current = setTimeout(async () => {
+      await fetch(`/api/notes/${idParam}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: value }),
+      });
+    }, 300);
+  };
 
   const handleSave = (content: string) => {
+    latestContent.current = content;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
-      await fetch(`/api/notes/${id}`, {
+      await fetch(`/api/notes/${idParam}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content }),
       });
+      latestContent.current = null;
     }, 800);
   };
 
@@ -32,16 +75,10 @@ export default function NoteEditorPage() {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <input
-        defaultValue={note.title}
+        value={note.title}
         className="text-4xl font-bold bg-transparent border-none outline-none text-foreground px-16 pt-16 pb-2"
         placeholder="Untitled"
-        onBlur={(e) => {
-          fetch(`/api/notes/${id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title: e.target.value }),
-          });
-        }}
+        onChange={(e) => handleTitleChange(e.target.value)}
       />
 
       <Editor

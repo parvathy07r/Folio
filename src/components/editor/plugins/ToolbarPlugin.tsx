@@ -1,25 +1,19 @@
 "use client";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-
 import { useCallback, useEffect, useState } from "react";
-
 import {
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
   $createParagraphNode,
-  $getRoot,
 } from "lexical";
-
 import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
-
 import {
   $setBlocksType,
   $getSelectionStyleValueForProperty,
   $patchStyleText,
 } from "@lexical/selection";
-
 import { Bold, Italic, Underline, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -148,15 +142,9 @@ export default function ToolbarPlugin() {
     <div className="sticky bottom-6 flex justify-center pointer-events-none">
       <div className="pointer-events-auto flex items-center gap-1 px-3 py-2 rounded-xl border border-border bg-background/95 backdrop-blur shadow-lg">
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1 text-xs font-medium w-28"
-            >
-              {BLOCK_LABELS[blockType]}
-              <ChevronDown className="size-3" />
-            </Button>
+          <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1 text-xs w-28">
+            {BLOCK_LABELS[blockType]}
+            <ChevronDown className="size-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {(Object.keys(BLOCK_LABELS) as BlockType[]).map((type) => (
@@ -194,21 +182,17 @@ export default function ToolbarPlugin() {
         <div className="w-px h-4 bg-border mx-1" />
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7 relative"
-              aria-label="Text color"
-            >
-              <span className="text-xs font-bold flex flex-col items-center gap-0.5">
-                A
-                <span
-                  className="w-3.5 h-0.5 rounded-full"
-                  style={{ backgroundColor: textColor }}
-                />
-              </span>
-            </Button>
+          <DropdownMenuTrigger
+            aria-label="Text color"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground size-7 relative"
+          >
+            <span className="text-xs font-bold flex flex-col items-center gap-0.5">
+              A
+              <span
+                className="w-3.5 h-0.5 rounded-full"
+                style={{ backgroundColor: textColor }}
+              />
+            </span>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent className="p-3 w-48">

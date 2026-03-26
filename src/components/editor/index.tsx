@@ -11,9 +11,9 @@ import ToolbarPlugin from "./plugins/ToolbarPlugin";
 
 interface Props {
   initialContent: string;
-  onchange: (content: string) => void;
+  onChange: (content: string) => void;
 }
-export default function Editor({ initialContent, onchange }: Props) {
+export default function Editor({ initialContent, onChange }: Props) {
   const initialConfig = {
     namespace: "NoteEditor",
     theme: EditorTheme,
@@ -23,7 +23,7 @@ export default function Editor({ initialContent, onchange }: Props) {
   };
   const handleChange = (editorState: EditorState) => {
     const json = JSON.stringify(editorState.toJSON());
-    onchange(json);
+    onChange(json);
   };
   return (
     <LexicalComposer initialConfig={initialConfig}>
