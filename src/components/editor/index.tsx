@@ -1,6 +1,6 @@
 import { HeadingNode } from "@lexical/rich-text";
 import EditorTheme from "./EditorTheme";
-import { EditorState } from "lexical";
+import { $createParagraphNode, $getRoot, EditorState } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -21,7 +21,25 @@ export default function Editor({ initialContent, onChange }: Props) {
       theme: EditorTheme,
       nodes: [HeadingNode],
       onError: (error: Error) => console.error(error),
-      editorState: initialContent || null,
+      editorState: (editor: {
+        parseEditorState: (s: string) => EditorState;
+        setEditorState: (s: EditorState) => void;
+        update: (fn: () => void) => void;
+      }) => {
+        if (initialContent) {
+          try {
+            const parsed = editor.parseEditorState(initialContent);
+            editor.setEditorState(parsed);
+          } catch {}
+        }
+
+        editor.update(() => {
+          const root = $getRoot();
+          if (root.getChildrenSize() === 0) {
+            root.append($createParagraphNode());
+          }
+        });
+      },
     }),
     [initialContent],
   );
