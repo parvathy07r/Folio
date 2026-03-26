@@ -8,23 +8,31 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
+import { useCallback, useMemo } from "react";
 
 interface Props {
   initialContent: string;
   onChange: (content: string) => void;
 }
 export default function Editor({ initialContent, onChange }: Props) {
-  const initialConfig = {
-    namespace: "NoteEditor",
-    theme: EditorTheme,
-    nodes: [HeadingNode],
-    onError: (error: Error) => console.error(error),
-    editorState: initialContent || null,
-  };
-  const handleChange = (editorState: EditorState) => {
-    const json = JSON.stringify(editorState.toJSON());
-    onChange(json);
-  };
+  const initialConfig = useMemo(
+    () => ({
+      namespace: "NoteEditor",
+      theme: EditorTheme,
+      nodes: [HeadingNode],
+      onError: (error: Error) => console.error(error),
+      editorState: initialContent || null,
+    }),
+    [initialContent],
+  );
+
+  const handleChange = useCallback(
+    (editorState: EditorState) => {
+      const json = JSON.stringify(editorState.toJSON());
+      onChange(json);
+    },
+    [onChange],
+  );
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <div className="relative flex flex-col h-full">

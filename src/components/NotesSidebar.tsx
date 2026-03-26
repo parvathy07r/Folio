@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { Note } from "@/types";
-import { MOCK_NOTES } from "@/data/constants";
 import { Button } from "@/components/ui/button";
 import {
-  FileText,
   Plus,
   MoreHorizontal,
   Trash2,
@@ -15,12 +13,34 @@ import {
 } from "lucide-react";
 import { getAvatar } from "@/utils";
 
+function getLexicalPreview(content: string): string {
+  if (!content) return "";
+
+  try {
+    const parsed = JSON.parse(content);
+
+    const texts: string[] = [];
+
+    for (const block of parsed.root.children) {
+      for (const child of block.children) {
+        if (child.type === "text" && child.text) {
+          texts.push(child.text);
+        }
+      }
+    }
+
+    return texts.join(" ").trim();
+  } catch {
+    return content;
+  }
+}
+
 export default function NotesSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const name = "John Doe";
   const [collapsed, setCollapsed] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search] = useState("");
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -42,18 +62,18 @@ export default function NotesSidebar() {
     return () => window.removeEventListener("note:title-updated", handler);
   }, []);
 
-  const fetchNotes = async () => {
+  const fetchNotes = useCallback(async () => {
     const response = await fetch("/api/notes");
     const data = await response.json();
     setNotes(data);
-    if (data.length > 0 && activeNoteId === null) {
-      setActiveNoteId(data[0].id);
+    if (data.length > 0) {
+      setActiveNoteId((prev) => (prev === null ? data[0].id : prev));
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [fetchNotes]);
 
   useEffect(() => {
     const match = pathname.match(/^\/dashboard\/notes\/(\d+)$/);
@@ -93,30 +113,47 @@ export default function NotesSidebar() {
     });
   }, [notes, search]);
 
-  const onSelectNote = async (id: number) => {
-    setActiveNoteId(id);
-    try {
-      router.push(`/dashboard/notes/${String(id)}`);
-    } finally {
+  const notePreviewById = useMemo(() => {
+    const map = new Map<number, string>();
+    for (const note of filteredNotes) {
+      const previewRaw = getLexicalPreview(note.content ?? "");
+      const preview =
+        previewRaw.length > 60 ? `${previewRaw.slice(0, 60)}…` : previewRaw;
+      map.set(note.id, preview);
     }
-  };
+    return map;
+  }, [filteredNotes]);
 
-  const onDeleteNote = async (id: number) => {
-    try {
-      const response = await fetch(`/api/notes/${id}`, {
-        method: "DELETE",
-      });
-      const data = await response.json();
-      setNotes((prev) => prev.filter((n) => n.id !== id));
-      if (activeNoteId === id) {
-        setActiveNoteId(null);
+  const onSelectNote = useCallback(
+    async (id: number) => {
+      setActiveNoteId(id);
+      try {
+        router.push(`/dashboard/notes/${String(id)}`);
+      } finally {
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    },
+    [router],
+  );
 
-  const onCreateNote = async () => {
+  const onDeleteNote = useCallback(
+    async (id: number) => {
+      try {
+        const response = await fetch(`/api/notes/${id}`, {
+          method: "DELETE",
+        });
+        await response.json();
+        setNotes((prev) => prev.filter((n) => n.id !== id));
+        if (activeNoteId === id) {
+          setActiveNoteId(null);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [activeNoteId],
+  );
+
+  const onCreateNote = useCallback(async () => {
     const response = await fetch("/api/notes", {
       method: "POST",
       headers: {
@@ -135,29 +172,7 @@ export default function NotesSidebar() {
     setNotes((prev) => [data, ...prev]);
     setActiveNoteId(data.id);
     router.push(`/dashboard/notes/${data.id}`);
-  };
-
-  function getLexicalPreview(content: string): string {
-    if (!content) return "";
-
-    try {
-      const parsed = JSON.parse(content);
-
-      const texts: string[] = [];
-
-      for (const block of parsed.root.children) {
-        for (const child of block.children) {
-          if (child.type === "text" && child.text) {
-            texts.push(child.text);
-          }
-        }
-      }
-
-      return texts.join(" ").trim();
-    } catch {
-      return content;
-    }
-  }
+  }, [router]);
 
   return (
     <aside
@@ -236,11 +251,7 @@ export default function NotesSidebar() {
 
             {filteredNotes.map((note) => {
               const active = note.id === activeNoteId;
-              const previewRaw = getLexicalPreview(note.content ?? "");
-              const preview =
-                previewRaw.length > 60
-                  ? `${previewRaw.slice(0, 60)}…`
-                  : previewRaw;
+              const preview = notePreviewById.get(note.id) ?? "";
 
               return (
                 <div key={note.id} className="relative">

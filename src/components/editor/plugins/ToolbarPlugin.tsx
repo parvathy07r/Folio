@@ -32,8 +32,6 @@ const BLOCK_LABELS: Record<BlockType, string> = {
   h3: "Heading 3",
 };
 
-const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
-
 const PRESET_COLORS = [
   "#000000",
   "#ffffff",
@@ -60,17 +58,24 @@ export default function ToolbarPlugin() {
     const selection = $getSelection();
 
     if ($isRangeSelection(selection)) {
-      setIsBold(selection.hasFormat("bold"));
-      setIsItalic(selection.hasFormat("italic"));
-      setIsUnderline(selection.hasFormat("underline"));
+      const nextIsBold = selection.hasFormat("bold");
+      const nextIsItalic = selection.hasFormat("italic");
+      const nextIsUnderline = selection.hasFormat("underline");
+
+      setIsBold((prev) => (prev === nextIsBold ? prev : nextIsBold));
+      setIsItalic((prev) => (prev === nextIsItalic ? prev : nextIsItalic));
+      setIsUnderline((prev) =>
+        prev === nextIsUnderline ? prev : nextIsUnderline,
+      );
 
       const anchorNode = selection.anchor.getNode();
       const element = anchorNode.getTopLevelElement();
 
       if ($isHeadingNode(element)) {
-        setBlockType(element.getTag() as BlockType);
+        const nextBlockType = element.getTag() as BlockType;
+        setBlockType((prev) => (prev === nextBlockType ? prev : nextBlockType));
       } else {
-        setBlockType("paragraph");
+        setBlockType((prev) => (prev === "paragraph" ? prev : "paragraph"));
       }
 
       const currentSize = $getSelectionStyleValueForProperty(
@@ -78,11 +83,15 @@ export default function ToolbarPlugin() {
         "font-size",
         "18px",
       );
-      setFontSize(parseInt(currentSize, 10) || 18);
+      const nextFontSize = parseInt(currentSize, 10) || 18;
+      setFontSize((prev) => (prev === nextFontSize ? prev : nextFontSize));
 
-      setTextColor(
-        $getSelectionStyleValueForProperty(selection, "color", "#000000"),
+      const nextTextColor = $getSelectionStyleValueForProperty(
+        selection,
+        "color",
+        "#000000",
       );
+      setTextColor((prev) => (prev === nextTextColor ? prev : nextTextColor));
     }
   }, []);
 
