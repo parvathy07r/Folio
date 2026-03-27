@@ -138,19 +138,24 @@ export default function NotesSidebar() {
   const onDeleteNote = useCallback(
     async (id: number) => {
       try {
-        const response = await fetch(`/api/notes/${id}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(`/api/notes/${id}`, { method: "DELETE" });
         await response.json();
-        setNotes((prev) => prev.filter((n) => n.id !== id));
-        if (activeNoteId === id) {
+
+        const remainingNotes = notes.filter((n) => n.id !== id);
+        setNotes(remainingNotes);
+
+        if (remainingNotes.length === 0) {
           setActiveNoteId(null);
+          router.push("/dashboard");
+        } else {
+          setActiveNoteId(remainingNotes[0].id);
+          router.push(`/dashboard/notes/${remainingNotes[0].id}`);
         }
       } catch (error) {
         console.error(error);
       }
     },
-    [activeNoteId],
+    [activeNoteId, notes, router],
   );
 
   const onCreateNote = useCallback(async () => {
