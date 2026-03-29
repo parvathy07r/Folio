@@ -39,7 +39,7 @@ export default function NotesSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const name = "John Doe";
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [search] = useState("");
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
