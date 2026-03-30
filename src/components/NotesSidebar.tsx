@@ -39,7 +39,7 @@ export default function NotesSidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const name = "John Doe";
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [search] = useState("");
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -53,13 +53,33 @@ export default function NotesSidebar() {
       if (!detail) return;
       setNotes((prev) =>
         prev.map((n) =>
-          n.id === detail.id ? { ...n, title: detail.title } : n,
+          Number(n.id) === Number(detail.id)
+            ? { ...n, title: detail.title }
+            : n,
         ),
       );
     };
 
     window.addEventListener("note:title-updated", handler);
     return () => window.removeEventListener("note:title-updated", handler);
+  }, []);
+
+  // Listener 2 — content/preview updates
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ id: number; content: string }>).detail;
+      if (!detail) return;
+      setNotes((prev) =>
+        prev.map((n) =>
+          Number(n.id) === Number(detail.id)
+            ? { ...n, content: detail.content }
+            : n,
+        ),
+      );
+    };
+
+    window.addEventListener("note:content-updated", handler);
+    return () => window.removeEventListener("note:content-updated", handler);
   }, []);
 
   const fetchNotes = useCallback(async () => {
