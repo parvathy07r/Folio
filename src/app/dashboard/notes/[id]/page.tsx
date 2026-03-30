@@ -36,30 +36,31 @@ export default function NoteEditorPage() {
     };
   }, [idParam]);
 
-  const handleTitleChange = (value: string) => {
-    setNote((prev) => (prev ? { ...prev, title: value } : prev));
-
-    const numericId = note?.id ?? Number(idParam);
-    if (Number.isFinite(numericId)) {
-      window.dispatchEvent(
-        new CustomEvent("note:title-updated", {
-          detail: { id: numericId, title: value },
-        }),
-      );
-    }
-
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setNote((prev) => (prev ? { ...prev, title: newTitle } : prev));
+    window.dispatchEvent(
+      new CustomEvent("note:title-updated", {
+        detail: { id: Number(idParam), title: newTitle },
+      }),
+    );
     if (titleSaveTimer.current) clearTimeout(titleSaveTimer.current);
     titleSaveTimer.current = setTimeout(async () => {
       await fetch(`/api/notes/${idParam}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: value }),
+        body: JSON.stringify({ title: newTitle }),
       });
-    }, 300);
+    }, 500);
   };
 
   const handleSave = (content: string) => {
     latestContent.current = content;
+    window.dispatchEvent(
+      new CustomEvent("note:content-updated", {
+        detail: { id: Number(idParam), content },
+      }),
+    );
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       await fetch(`/api/notes/${idParam}`, {
@@ -85,7 +86,7 @@ export default function NoteEditorPage() {
         value={note.title}
         className="text-4xl font-bold bg-transparent border-none outline-none text-foreground px-16 pt-16 pb-2"
         placeholder="Untitled"
-        onChange={(e) => handleTitleChange(e.target.value)}
+        onChange={handleTitleChange}
       />
 
       <Editor
