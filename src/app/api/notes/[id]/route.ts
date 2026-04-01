@@ -1,11 +1,17 @@
 import { pool } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(_req: Request, { params }: RouteContext) {
   try {
-    const { id: rawId } = await params; 
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: rawId } = await params;
     const id = parseInt(rawId, 10);
 
     if (isNaN(id)) {
@@ -20,7 +26,7 @@ export async function GET(_req: Request, { params }: RouteContext) {
         updated_at AS "updatedAt"
        FROM notes
        WHERE id = $1 AND user_id = $2`,
-      [id, 1]
+      [id, session.userId],
     );
 
     if (result.rows.length === 0) {
@@ -28,33 +34,50 @@ export async function GET(_req: Request, { params }: RouteContext) {
     }
 
     return NextResponse.json(result.rows[0]);
-
   } catch (err) {
-    return NextResponse.json({ error: "Failed to fetch note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch note" },
+      { status: 500 },
+    );
   }
 }
 
 export async function DELETE(_req: Request, { params }: RouteContext) {
   try {
-    const { id: rawId } = await params; 
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: rawId } = await params;
     const id = parseInt(rawId, 10);
 
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid id" }, { status: 400 });
     }
 
-    await pool.query("DELETE FROM notes WHERE id = $1", [id]);
+    await pool.query("DELETE FROM notes WHERE id = $1 AND user_id = $2", [
+      id,
+      session.userId,
+    ]);
 
     return NextResponse.json({ success: true });
-
   } catch (err) {
-    return NextResponse.json({ error: "Failed to delete note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete note" },
+      { status: 500 },
+    );
   }
 }
 
 export async function PATCH(req: Request, { params }: RouteContext) {
   try {
-    const { id: rawId } = await params; 
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id: rawId } = await params;
     const id = parseInt(rawId, 10);
     const body = await req.json();
 
@@ -71,19 +94,29 @@ export async function PATCH(req: Request, { params }: RouteContext) {
          color      = COALESCE($4, color),
          pinned     = COALESCE($5, pinned),
          updated_at = NOW()
-       WHERE id = $6
+       WHERE id = $6 AND user_id = $7
        RETURNING
          id, title, content, tag, color, pinned,
          user_id AS "userId",
          created_at AS "createdAt",
          updated_at AS "updatedAt"`,
-      [body.title ?? null, body.content ?? null, body.tag ?? null, body.color ?? null, body.pinned ?? null, id]
+      [
+        body.title ?? null,
+        body.content ?? null,
+        body.tag ?? null,
+        body.color ?? null,
+        body.pinned ?? null,
+        id,
+        session.userId,
+      ],
     );
 
     return NextResponse.json(result.rows[0]);
-
   } catch (err) {
-    return NextResponse.json({ error: "Failed to update note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update note" },
+      { status: 500 },
+    );
   }
 }
 

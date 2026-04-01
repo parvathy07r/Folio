@@ -193,7 +193,6 @@ export default function NotesSidebar() {
         tag: "personal",
         color: 0,
         pinned: false,
-        userId: 1,
       }),
     });
     const data = await response.json();
