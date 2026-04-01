@@ -363,7 +363,6 @@ export default function NotesSidebar() {
                 <p className="text-sm font-semibold truncate text-text">
                   {name}
                 </p>
-                <p className="text-xs text-subtext">Free</p>
               </div>
             </div>
             <button
