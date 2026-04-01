@@ -1,21 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardDescription,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignUpPage() {
-  const router = useRouter();
+  const { signup } = useAuth();
   const [signUpFormState, setSignUpFormState] = useState({
     name: "",
     email: "",
@@ -27,8 +28,50 @@ export default function SignUpPage() {
     loading: false,
   });
 
-  const handleSingInButtonClick = () => {
-    router.push("/login");
+  const handleSignUpButtonClick = async () => {
+    if (
+      !signUpFormState.name ||
+      !signUpFormState.email ||
+      !signUpFormState.password
+    ) {
+      setSignUpFormState((prev) => ({
+        ...prev,
+        error: "Please fill in all fields",
+      }));
+      return;
+    }
+
+    if (signUpFormState.password !== signUpFormState.confirmPassword) {
+      setSignUpFormState((prev) => ({
+        ...prev,
+        error: "Passwords do not match",
+      }));
+      return;
+    }
+
+    if (signUpFormState.password.length < 6) {
+      setSignUpFormState((prev) => ({
+        ...prev,
+        error: "Password must be at least 6 characters",
+      }));
+      return;
+    }
+
+    setSignUpFormState((prev) => ({ ...prev, loading: true, error: "" }));
+
+    const result = await signup(
+      signUpFormState.name,
+      signUpFormState.email,
+      signUpFormState.password,
+    );
+
+    if (result.error) {
+      setSignUpFormState((prev) => ({
+        ...prev,
+        loading: false,
+        error: result.error || "Signup failed",
+      }));
+    }
   };
 
   return (
@@ -37,7 +80,10 @@ export default function SignUpPage() {
         {/* Card */}
         <Card className="bg-surface/80 border-border rounded-2xl p-9 backdrop-blur-md shadow-2xl ring-0">
           {/* heading */}
-          <CardHeader className="p-0 mb-7">
+          <CardHeader className="p-0 mb-1">
+            <CardTitle className="font-playfair text-2xl font-bold text-text">
+              Welcome to Folio!
+            </CardTitle>
             <CardDescription className="text-subtle text-sm">
               Sign up to your Folio workspace
             </CardDescription>
@@ -159,12 +205,23 @@ export default function SignUpPage() {
               </div>
             </div>
 
+            {signUpFormState.error && (
+              <p className="text-center text-sm text-red-500">
+                {signUpFormState.error}
+              </p>
+            )}
+
             {/* Submit */}
             <Button
-              onClick={handleSingInButtonClick}
+              onClick={handleSignUpButtonClick}
+              disabled={signUpFormState.loading}
               className="w-full bg-purple text-card font-semibold py-3 h-auto rounded-xl hover:bg-purple/90 shadow-lg shadow-purple/20 mt-1"
             >
-              Sign up
+              {signUpFormState.loading ? (
+                <Loader2 className="size-5 animate-spin" />
+              ) : (
+                "Sign up"
+              )}
             </Button>
           </CardContent>
         </Card>
