@@ -177,6 +177,12 @@ export default function SignUpPage() {
                     signUpFormState.showConfirmPassword ? "text" : "password"
                   }
                   value={signUpFormState.confirmPassword}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                  }}
                   onChange={(e) => {
                     setSignUpFormState({
                       ...signUpFormState,
