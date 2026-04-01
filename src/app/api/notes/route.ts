@@ -1,4 +1,5 @@
 import { pool } from "@/lib/db";
+import { getSession } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 type RouteContext = { params: { id: string } };
@@ -8,9 +9,14 @@ type RouteContext = { params: { id: string } };
 // Returns all notes for the user
 export async function GET() {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const result = await pool.query(
       `SELECT id, title, content, tag, color, pinned, user_id AS "userId", created_at AS "createdAt", updated_at AS "updatedAt" FROM notes WHERE user_id = $1 ORDER BY updated_at DESC`,
-      [1],
+      [session.userId],
     );
     return NextResponse.json(result.rows);
   } catch (error) {
@@ -27,13 +33,18 @@ export async function GET() {
 // --------------------
 export async function POST(req: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const title = (body.title ?? "Untitled").trim();
     const content = body.content ?? "";
     const tag = body.tag ?? null;
     const color = body.color ?? 0;
     const pinned = body.pinned ?? false;
-    const userId = 1;
+    const userId = session.userId;
 
     const result = await pool.query(
       `INSERT INTO notes (title, content, tag, color, pinned, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
