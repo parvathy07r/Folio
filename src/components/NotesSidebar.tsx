@@ -45,8 +45,10 @@ export default function NotesSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [search] = useState("");
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const menuTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
   const [notes, setNotes] = useState<Note[]>([]);
   const [activeNoteId, setActiveNoteId] = useState<number | null>(null);
 
@@ -107,7 +109,7 @@ export default function NotesSidebar() {
   }, [pathname]);
 
   useEffect(() => {
-    if (openMenuFor === null) return;
+    if (openMenuFor === null && !showUserMenu) return;
 
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Node | null;
@@ -115,15 +117,17 @@ export default function NotesSidebar() {
 
       if (menuRef.current?.contains(target)) return;
       if (menuTriggerRef.current?.contains(target)) return;
+      if (userMenuRef.current?.contains(target)) return;
 
       setOpenMenuFor(null);
+      setShowUserMenu(false);
     };
 
     document.addEventListener("pointerdown", onPointerDown);
     return () => {
       document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [openMenuFor]);
+  }, [openMenuFor, showUserMenu]);
 
   const filteredNotes = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -345,38 +349,57 @@ export default function NotesSidebar() {
         )}
       </div>
 
-      <div className="flex flex-col gap-1 px-2 pb-2">
-        {!collapsed && (
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/dashboard/settings")}
-            className="w-full cursor-pointer justify-start items-center gap-2 px-3 py-2 h-auto rounded-xl text-subtext hover:text-text hover:bg-card"
+      <div className="relative flex flex-col gap-1 px-2 pb-2">
+        {showUserMenu && (
+          <div
+            ref={userMenuRef}
+            className="absolute bottom-full left-2 right-2 mb-2 z-20 rounded-xl bg-card border border-border shadow-xl overflow-hidden"
           >
-            <Settings className="size-4" />
-            Settings
-          </Button>
-        )}
-        <div className="flex items-center justify-between gap-3 px-3 py-3 rounded-xl">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-xs font-semibold text-text flex-shrink-0">
-              {getAvatar(name)}
+            <div className="flex items-center gap-3 px-3 py-3 border-b border-border">
+              <div className="size-9 rounded-full bg-sidebar border border-border flex items-center justify-center text-xs font-semibold text-text flex-shrink-0">
+                {getAvatar(name)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold truncate text-text">
+                  {name}
+                </p>
+                <p className="text-xs text-subtext">Free</p>
+              </div>
             </div>
-            {!collapsed && (
-              <p className="text-sm font-semibold truncate text-text">{name}</p>
-            )}
-          </div>
-          {!collapsed && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={logout}
-              className="cursor-pointer size-8 rounded-lg text-subtle hover:text-text hover:bg-card"
-              aria-label="Logout"
+            <button
+              className="w-full text-left px-3 py-2.5 text-sm text-text hover:bg-accent flex items-center gap-3 cursor-pointer"
+              onClick={() => {
+                setShowUserMenu(false);
+                router.push("/dashboard/settings");
+              }}
+            >
+              <Settings className="size-4" />
+              Settings
+            </button>
+            <button
+              className="w-full text-left px-3 py-2.5 text-sm text-text hover:bg-accent flex items-center gap-3 cursor-pointer"
+              onClick={() => {
+                setShowUserMenu(false);
+                logout();
+              }}
             >
               <LogOut className="size-4" />
-            </Button>
+              Log out
+            </button>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => setShowUserMenu((v) => !v)}
+          className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-card cursor-pointer w-full"
+        >
+          <div className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-xs font-semibold text-text flex-shrink-0">
+            {getAvatar(name)}
+          </div>
+          {!collapsed && (
+            <p className="text-sm font-semibold truncate text-text">{name}</p>
           )}
-        </div>
+        </button>
       </div>
     </aside>
   );
