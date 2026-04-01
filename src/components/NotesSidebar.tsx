@@ -10,8 +10,10 @@ import {
   Trash2,
   LogOut,
   NotebookPen,
+  Settings,
 } from "lucide-react";
 import { getAvatar } from "@/utils";
+import { useAuth } from "@/context/AuthContext";
 
 function getLexicalPreview(content: string): string {
   if (!content) return "";
@@ -38,7 +40,8 @@ function getLexicalPreview(content: string): string {
 export default function NotesSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const name = "John Doe";
+  const { user, logout } = useAuth();
+  const name = user?.name || "User";
   const [collapsed, setCollapsed] = useState(false);
   const [search] = useState("");
   const [openMenuFor, setOpenMenuFor] = useState<number | null>(null);
@@ -343,30 +346,38 @@ export default function NotesSidebar() {
         )}
       </div>
 
-      <div>
-        <Button
-          variant="ghost"
-          className="w-full cursor-pointer justify-between items-center gap-3 px-3 py-3 h-auto rounded-xl text-left"
-        >
+      <div className="flex flex-col gap-1 px-2 pb-2">
+        {!collapsed && (
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/dashboard/settings")}
+            className="w-full cursor-pointer justify-start items-center gap-2 px-3 py-2 h-auto rounded-xl text-subtext hover:text-text hover:bg-card"
+          >
+            <Settings className="size-4" />
+            Settings
+          </Button>
+        )}
+        <div className="flex items-center justify-between gap-3 px-3 py-3 rounded-xl">
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <div className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-xs font-semibold text-text flex-shrink-0">
               {getAvatar(name)}
             </div>
             {!collapsed && (
-              <p className="text-sm font-semibold truncate">{name}</p>
+              <p className="text-sm font-semibold truncate text-text">{name}</p>
             )}
           </div>
           {!collapsed && (
             <Button
               variant="ghost"
               size="icon"
-              className="cursor-pointer size-8 rounded-lg text-subtle hover:text-text"
+              onClick={logout}
+              className="cursor-pointer size-8 rounded-lg text-subtle hover:text-text hover:bg-card"
               aria-label="Logout"
             >
               <LogOut className="size-4" />
             </Button>
           )}
-        </Button>
+        </div>
       </div>
     </aside>
   );
