@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ImagePlugin from "./ImagePlugin";
+import VideoPlugin from "./VideoPlugin";
 
 type BlockType = "paragraph" | "h1" | "h2" | "h3";
 
@@ -271,6 +272,7 @@ export default function ToolbarPlugin() {
         <div className="w-px h-4 bg-border mx-1" />
 
         <ImagePlugin />
+        <VideoPlugin />
       </div>
     </div>
   );

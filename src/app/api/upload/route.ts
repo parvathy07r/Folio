@@ -17,19 +17,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "video/mp4",
+      "video/webm",
+      "video/ogg",
+    ];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed." },
-        { status: 400 }
+        {
+          error:
+            "Invalid file type. Only JPEG, PNG, GIF, WebP, MP4, WebM, and OGG are allowed.",
+        },
+        { status: 400 },
       );
     }
 
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 100 * 1024 * 1024; // 100MB for video
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File too large. Maximum size is 5MB." },
-        { status: 400 }
+        { error: "File too large. Maximum size is 100MB." },
+        { status: 400 },
       );
     }
 
@@ -54,7 +65,7 @@ export async function POST(req: Request) {
     console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Failed to upload file" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
