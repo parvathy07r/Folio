@@ -142,6 +142,7 @@ export default function LoginPage() {
                   e.preventDefault();
                   handleSignInButtonClick();
                 }}
+                className="flex flex-col gap-4"
               >
                 {loginFormState.error && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
@@ -213,7 +214,7 @@ export default function LoginPage() {
                 <Button
                   type="submit"
                   disabled={loginFormState.loading}
-                  className="w-full bg-purple text-card font-semibold py-3 h-auto rounded-xl hover:bg-purple/90 shadow-lg shadow-purple/20 mt-1"
+                  className="w-full bg-purple text-card font-semibold py-3 h-auto rounded-xl hover:bg-purple/90 shadow-lg shadow-purple/20"
                 >
                   {loginFormState.loading ? (
                     <Loader2 className="size-5 animate-spin" />
