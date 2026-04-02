@@ -105,7 +105,7 @@ export default function LoginPage() {
                   type="button"
                   variant="ghost"
                   onClick={handleBackToLogin}
-                  className="w-fit -ml-2 text-subtle hover:text-text"
+                  className="w-fit -ml-2 text-subtle hover:text-text mb-4"
                 >
                   <ArrowLeft className="size-4 mr-2" />
                   Back
@@ -120,16 +120,15 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                <div className="text-center">
+                <div className="text-center flex flex-col gap-4">
                   <p className="text-sm text-subtle">
                     Enter the 6-digit code from your authenticator app
                   </p>
+                  <TOTPInput
+                    onComplete={handleTOTPSubmit}
+                    disabled={loginFormState.loading}
+                  />
                 </div>
-
-                <TOTPInput
-                  onComplete={handleTOTPSubmit}
-                  disabled={loginFormState.loading}
-                />
 
                 {loginFormState.loading && (
                   <div className="flex justify-center">
@@ -143,7 +142,6 @@ export default function LoginPage() {
                   e.preventDefault();
                   handleSignInButtonClick();
                 }}
-                className="flex flex-col gap-4"
               >
                 {loginFormState.error && (
                   <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
