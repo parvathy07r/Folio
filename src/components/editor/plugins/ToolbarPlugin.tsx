@@ -14,7 +14,14 @@ import {
   $getSelectionStyleValueForProperty,
   $patchStyleText,
 } from "@lexical/selection";
-import { Bold, Italic, Underline, ChevronDown } from "lucide-react";
+import {
+  Bold,
+  Italic,
+  Underline,
+  ChevronDown,
+  ImagePlus,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ImagePlugin from "./ImagePlugin";
 
 type BlockType = "paragraph" | "h1" | "h2" | "h3";
 
@@ -259,6 +267,10 @@ export default function ToolbarPlugin() {
         >
           <Underline className="size-3.5" />
         </Button>
+
+        <div className="w-px h-4 bg-border mx-1" />
+
+        <ImagePlugin />
       </div>
     </div>
   );
