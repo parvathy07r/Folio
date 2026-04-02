@@ -1,6 +1,7 @@
 import { HeadingNode } from "@lexical/rich-text";
 import EditorTheme from "./EditorTheme";
 import { $createParagraphNode, $getRoot, EditorState } from "lexical";
+import { ImageNode } from "./nodes/ImageNode";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -19,7 +20,7 @@ export default function Editor({ initialContent, onChange }: Props) {
     () => ({
       namespace: "NoteEditor",
       theme: EditorTheme,
-      nodes: [HeadingNode],
+      nodes: [HeadingNode, ImageNode],
       onError: (error: Error) => console.error(error),
       editorState: (editor: {
         parseEditorState: (s: string) => EditorState;
