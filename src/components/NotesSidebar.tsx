@@ -223,7 +223,7 @@ export default function NotesSidebar() {
           type="button"
           onClick={() => setCollapsed((v) => !v)}
           className={
-            "group flex items-center gap-3 rounded-xl cursor-pointer hover:bg-card px-2 py-2 -mx-2 " +
+            "group flex items-center gap-3 rounded-xl cursor-pointer px-2 py-2 -mx-2 " +
             (collapsed ? "justify-center" : "justify-start")
           }
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -300,11 +300,11 @@ export default function NotesSidebar() {
                       <p className="text-[12px] text-text font-bold truncate">
                         {note.title}
                       </p>
-                      {!!preview && (
+                      {/* {!!preview && (
                         <p className="text-[11px] text-subtext font-normal truncate">
                           {preview}
                         </p>
-                      )}
+                      )} */}
                     </div>
 
                     <Button
@@ -390,7 +390,7 @@ export default function NotesSidebar() {
         <button
           type="button"
           onClick={() => setShowUserMenu((v) => !v)}
-          className="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-card cursor-pointer w-full"
+          className="flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer w-full"
         >
           <div className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-xs font-semibold text-text flex-shrink-0">
             {getAvatar(name)}
